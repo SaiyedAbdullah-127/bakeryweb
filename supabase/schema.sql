@@ -49,7 +49,7 @@ ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Categories are viewable by everyone." ON categories FOR SELECT USING (true);
 CREATE POLICY "Only admins can modify categories." ON categories FOR ALL
   USING (
-    (auth.jwt() ->> 'email' = 'tafs4918@gmail.com') OR 
+    (auth.jwt() ->> 'email' = 'me@gmail.com') OR 
     (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'))
   );
 
@@ -112,10 +112,10 @@ CREATE POLICY "Admins can delete profiles." ON profiles FOR DELETE
 
 -- Products Policies
 CREATE POLICY "Products are viewable by everyone." ON products FOR SELECT 
-  USING (is_active = true OR (auth.jwt() ->> 'email' = 'tafs4918@gmail.com') OR (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')));
+  USING (is_active = true OR (auth.jwt() ->> 'email' = 'me@gmail.com') OR (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')));
 CREATE POLICY "Only admins can modify products." ON products FOR ALL 
   USING (
-    (auth.jwt() ->> 'email' = 'tafs4918@gmail.com') OR 
+    (auth.jwt() ->> 'email' = 'me@gmail.com') OR 
     (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'))
   );
 
@@ -123,12 +123,12 @@ CREATE POLICY "Only admins can modify products." ON products FOR ALL
 CREATE POLICY "Users can view own orders." ON orders FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Admins can view all orders." ON orders FOR SELECT 
   USING (
-    (auth.jwt() ->> 'email' = 'tafs4918@gmail.com') OR 
+    (auth.jwt() ->> 'email' = 'me@gmail.com') OR 
     (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'))
   );
 CREATE POLICY "Admins can update orders." ON orders FOR UPDATE
   USING (
-    (auth.jwt() ->> 'email' = 'tafs4918@gmail.com') OR 
+    (auth.jwt() ->> 'email' = 'me@gmail.com') OR 
     (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'))
   );
 
@@ -141,7 +141,7 @@ BEGIN
     new.id, 
     new.email,
     CASE 
-      WHEN new.email = 'tafs4918@gmail.com' THEN 'admin' 
+      WHEN new.email = 'me@gmail.com' THEN 'admin' 
       ELSE 'user' 
     END,
     COALESCE(new.raw_user_meta_data ->> 'full_name', new.email)

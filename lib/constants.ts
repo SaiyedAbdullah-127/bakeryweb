@@ -1,4 +1,4 @@
-export const ADMIN_EMAIL = 'tafs4918@gmail.com';
+export const ADMIN_EMAIL = 'me@gmail.com';
 
 export const isEmailAdmin = (email?: string | null) => {
   if (!email) return false;
