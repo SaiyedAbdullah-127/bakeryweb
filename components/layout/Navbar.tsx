@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingCart, User, Menu, X, LogOut, LayoutDashboard, ShoppingBag, Dessert, ArrowRight } from "lucide-react";
+import { ShoppingCart, User, Menu, X, LogOut, LayoutDashboard, ShoppingBag, Dessert, ArrowRight, ChevronRight, Package, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/lib/store/useCart";
 import CartDrawer from "@/components/cart/CartDrawer";
@@ -16,6 +16,7 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [isDashboardOpen, setIsDashboardOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   
@@ -73,6 +74,13 @@ const Navbar = () => {
     { name: "Shop", href: "/shop" },
     { name: "Best Sellers", href: "/best-sellers" },
     { name: "Our Story", href: "/about" },
+  ];
+
+  const dashboardLinks = [
+    { name: "Overview", href: "/admin", icon: LayoutDashboard },
+    { name: "Products", href: "/admin/products", icon: Package },
+    { name: "Orders", href: "/admin/orders", icon: ShoppingBag },
+    { name: "Customers", href: "/admin/customers", icon: Users },
   ];
 
   const isAdmin = profile?.role === 'admin' || isEmailAdmin(user?.email);
@@ -272,14 +280,50 @@ const Navbar = () => {
               ))}
               
               {mounted && isAdmin && (
-                <Link
-                  href="/admin"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-lg font-bold text-primary py-4 px-5 rounded-2xl hover:bg-primary/10 transition-all flex items-center justify-between group"
-                >
-                  Dashboard
-                  <LayoutDashboard size={18} />
-                </Link>
+                <div className="space-y-1">
+                  <button
+                    onClick={() => setIsDashboardOpen(!isDashboardOpen)}
+                    className="w-full flex items-center justify-between text-lg font-bold text-primary py-4 px-5 rounded-2xl hover:bg-primary/10 transition-all"
+                  >
+                    <span className="flex items-center gap-3">
+                      <LayoutDashboard size={18} />
+                      Dashboard
+                    </span>
+                    <ChevronRight
+                      size={20}
+                      className={cn(
+                        "transition-transform duration-300",
+                        isDashboardOpen ? "rotate-90" : "rotate-0"
+                      )}
+                    />
+                  </button>
+
+                  <AnimatePresence>
+                    {isDashboardOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="space-y-1 overflow-hidden pl-4"
+                      >
+                        {dashboardLinks.map((link) => (
+                          <Link
+                            key={link.name}
+                            href={link.href}
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className={cn(
+                              "flex items-center gap-3 text-base font-semibold py-3 px-5 rounded-2xl transition-all",
+                              pathname === link.href ? "bg-primary text-white" : "hover:bg-secondary text-foreground/80"
+                            )}
+                          >
+                            <link.icon size={16} />
+                            {link.name}
+                          </Link>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               )}
 
               <div className="h-px bg-border my-6" />
